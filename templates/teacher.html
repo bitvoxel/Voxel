@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>Voxel - An intuitive chatbot</title>
+    <title>Neela - Add Teacher</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
@@ -120,11 +120,11 @@
             <br>
             <nav>
                 <ul>
-                    <li><a href="/" style="font-size: 3vh;">Chatbot</a></li>
-                    <li><a href="/student" style="font-size: 3vh;">Students</a></li>
-                    <li><a href="/teacher" style="font-size: 3vh;">Teachers</a></li>
-                    <li><a href="/assgn" style="font-size: 3vh;">Assignments</a></li>
-                    <li><a href="/schedule" style="font-size: 3vh;">Schedules</a></li>
+                  <li><a href="/" style="font-size: 3vh;">Chatbot</a></li>
+                  <li><a href="/student" style="font-size: 3vh;">Students</a></li>
+                  <li><a href="/teacher" style="font-size: 3vh;">Teachers</a></li>
+                  <li><a href="/assgn" style="font-size: 3vh;">Assignments</a></li>
+                  <li><a href="/schedule" style="font-size: 3vh;">Schedules</a></li>
                 </ul>
               </nav>
         </div>
@@ -132,38 +132,36 @@
     <br>
     <div id="wr">
         <div id="l">
-            <input type="text" class="inp" id="1" name="name" placeholder="Enter Student Name" required />
-            <input type="text" class="inp" id="2" name="class" placeholder="Enter Class" required />
-            <input type="text" class="inp" id="3" name="stream" placeholder="Enter Stream" required />
-            <input type="text" class="inp" id="4" name="house" placeholder="Enter House" required />
+            <input type="text" class="inp" id="1" name="name" placeholder="Enter Teacher Name" required />
+            <input type="text" class="inp" id="2" name="subject" placeholder="Enter Subject" required />
+            <input type="text" class="inp" id="3" name="class" placeholder="Class Teacher of (Enter Class)" required />
+            <input type="text" class="inp" id="4" name="stream" placeholder="Enter Stream (if applicable)" />
             <div style="display: flex; justify-content: center;">
-                <button onclick="sub()" type="submit" id="but">Add Student</button>
+                <button onclick="sub()" type="submit" id="but">Add Teacher</button>
             </div>
         </div>
     </div>
 
     <script>
         async function sub() {
-            const response = await fetch("/add_student", {
+            const response = await fetch("/add_teacher", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ 
                     name: document.getElementById("1").value,
-                    clas: document.getElementById("2"). value,
-                    stream: document.getElementById("3").value,
-                    house: document.getElementById("4").value
+                    subject: document.getElementById("2").value,
+                    class: document.getElementById("3").value,
+                    stream: document.getElementById("4").value
                 }),
             });
-            const result = await response.json();
-            alert(result.message);
-            document.getElementById("1").value=""
-            document.getElementById("2").value=""
-            document.getElementById("3").value=""
-            document.getElementById("4").value=""
 
-
+            if (response.ok) {
+                alert("Teacher added successfully!");
+            } else {
+                alert("Error adding teacher. Please try again.");
+            }
         }
     </script>
 </body>

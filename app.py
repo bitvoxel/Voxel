@@ -1,47 +1,73 @@
-from flask import Flask,render_template,request, jsonify
-import json
+from flask import Flask, render_template, request, jsonify
+from DB import DatabaseManager
 from gr import Gr
-with open('static/students.json', 'r+') as file:
-    data = json.load(file)
 
 app = Flask(__name__)
-instance = Gr()
-instance.chat.append({"role": "system",
-             "content": "You are a school assistant bot who can tell details about students and teachers.You can take input from student and display information.You can also add students to your memory. You can sort students by various filters.You can also solve various homework questions.You can also add teachers and assign class teachers.The linebreaks in your reply must be html compatible"})
-s="Here is a list of students in this school.\n"
-for x in data["students"]:
-    s+=str(x)
-instance.chat.append({"role":"system","content":s})
+instance = Gr(api_key="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")
+DBM = DatabaseManager(host="localhost", user="root", password="root")
+DBM.create_connection()
+DBM.create_database("school")
+DBM.create_tables()
+
 @app.route("/")
-def hello_world():
+def home():
     return render_template("home.html")
 
-@app.route('/msg',methods=['POST'])
-def msg():
-    user_input = request.json.get("message")
-    response = instance.ask(user_input)
-    return jsonify({"response": response})
-
-@app.route('/msgclear')
-def clear():
-    instance.chat=[]
-
-@app.route("/student")
+@app.route('/student')
 def st():
     return render_template('student.html')
 
-@app.route('/add_student',methods=['POST'])
-def add():
-    name=request.json.get("name")
-    clas=request.json.get("clas")
-    stream=request.json.get("stream")
-    house=request.json.get("house")
-    print(name,clas,stream)
-    instance.ask(f"Add this student to this school:{name},{clas},{stream},{house}")
-    data["students"].append({ "name": name, "class": clas, "stream": stream, "house": house })
-    with open('static/students.json', 'w') as k:
-        json.dump(data, k)
-    return jsonify({})
+@app.route('/teacher')
+def teacher():
+    return render_template('teacher.html')
 
+@app.route('/add_student', methods=['POST'])
+def add_student():
+    data = request.get_json()
+    name = data.get("name")
+    clas = data.get("class")
+    stream = data.get("stream")
+    house = data.get("house")
+    instance.ask(f"Add this student to this school: {name}, {clas}, {stream}, {house}")
     
+    # Add student to the database
+    DBM.add_student(name, clas, stream, house)
+    return jsonify({"message": "Student added successfully!"})
 
+@app.route('/add_teacher', methods=['POST'])
+def add_teacher():
+    data = request.get_json()
+    name = data.get("name")
+    subject = data.get("subject")
+    clas = data.get("class")
+    stream = data.get("stream")
+    instance.ask(f"Add this teacher to the school: {name}, Subject: {subject}, Class: {clas}, Stream: {stream}")
+    
+    # Add teacher to the database
+    DBM.add_teacher(name, subject, clas, stream)
+    return jsonify({"message": "Teacher added successfully!"})
+
+@app.route('/msg', methods=['POST'])
+def msg():
+    data = request.get_json()
+    user_input = data.get("message")
+    response = instance.ask(user_input)
+    
+    # Fetch current student and teacher lists from the database
+    students_data = DBM.fetch_all_students()
+    teachers_data = DBM.fetch_all_teachers()
+    
+    # Prepare the data to send back
+    students_list = instance.ask("Give a eval compatible list of students with their details as a list of tuples")
+    teachers_list = instance.ask("Give a eval compatible list of teachers with their details as a list of tuples")
+    students_list = eval(students_list)
+    teachers_list = eval(teachers_list)
+
+    DBM.update_all_students(students_list)
+    DBM.update_all_teachers(teachers_list)
+    
+    return jsonify({"response": response})
+
+if __name__ == "__main__":
+    print("HI")
+    app.run(host='0.0.0.0', port=5000)
