@@ -1,13 +1,13 @@
 from flask import Flask, render_template, request, jsonify
-from DB import DatabaseManager
+# from DB import DatabaseManager
 from gr import Gr
 
 app = Flask(__name__)
-instance = Gr(api_key="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")
-DBM = DatabaseManager(host="localhost", user="root", password="root")
-DBM.create_connection()
-DBM.create_database("school")
-DBM.create_tables()
+instance = Gr()
+# DBM = DatabaseManager(host="localhost", user="root", password="root")
+# DBM.create_connection()
+# DBM.create_database("school")
+# DBM.create_tables()
 
 @app.route("/")
 def home():
@@ -31,7 +31,7 @@ def add_student():
     instance.ask(f"Add this student to this school: {name}, {clas}, {stream}, {house}")
     
     # Add student to the database
-    DBM.add_student(name, clas, stream, house)
+    # DBM.add_student(name, clas, stream, house)
     return jsonify({"message": "Student added successfully!"})
 
 @app.route('/add_teacher', methods=['POST'])
@@ -44,7 +44,7 @@ def add_teacher():
     instance.ask(f"Add this teacher to the school: {name}, Subject: {subject}, Class: {clas}, Stream: {stream}")
     
     # Add teacher to the database
-    DBM.add_teacher(name, subject, clas, stream)
+    # DBM.add_teacher(name, subject, clas, stream)
     return jsonify({"message": "Teacher added successfully!"})
 
 @app.route('/msg', methods=['POST'])
@@ -53,18 +53,18 @@ def msg():
     user_input = data.get("message")
     response = instance.ask(user_input)
     
-    # Fetch current student and teacher lists from the database
-    students_data = DBM.fetch_all_students()
-    teachers_data = DBM.fetch_all_teachers()
+    # # Fetch current student and teacher lists from the database
+    # students_data = DBM.fetch_all_students()
+    # teachers_data = DBM.fetch_all_teachers()
     
     # Prepare the data to send back
-    students_list = instance.ask("Give a eval compatible list of students with their details as a list of tuples")
-    teachers_list = instance.ask("Give a eval compatible list of teachers with their details as a list of tuples")
-    students_list = eval(students_list)
-    teachers_list = eval(teachers_list)
+    # students_list = instance.ask("Give me only a eval compatible list of students with their details as a list of tuples")
+    # teachers_list = instance.ask("Give me only a eval compatible list of teachers with their details as a list of tuples")
+    # students_list = eval(students_list)
+    # teachers_list = eval(teachers_list)
 
-    DBM.update_all_students(students_list)
-    DBM.update_all_teachers(teachers_list)
+    # DBM.update_all_students(students_list)
+    # DBM.update_all_teachers(teachers_list)
     
     return jsonify({"response": response})
 

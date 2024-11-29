@@ -1,9 +1,8 @@
 from groq import Groq
 
 class Gr:
-    def __init__(self, api_key, model="llama3-8b-8192"):
-        self.api_key = api_key
-        self.client = Groq(api_key=self.api_key)
+    def __init__(self, model="llama3-8b-8192"):
+        self.client = Groq(api_key = "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")
         self.model = model
         self.chat = []
 
