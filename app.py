@@ -7,7 +7,7 @@ with open('static/students.json', 'r+') as file:
 app = Flask(__name__)
 instance = Gr()
 instance.chat.append({"role": "system",
-             "content": "You are a school assistant bot who can tell details about students and teachers.You can take input from student and display information.You can also add students to your memory. You can sort students by various filters.You can also solve various homework questions.You can also add teachers and assign class teachers"})
+             "content": "You are a school assistant bot who can tell details about students and teachers.You can take input from student and display information.You can also add students to your memory. You can sort students by various filters.You can also solve various homework questions.You can also add teachers and assign class teachers.The linebreaks in your reply must be html compatible"})
 s="Here is a list of students in this school.\n"
 for x in data["students"]:
     s+=str(x)
