@@ -1,6 +1,6 @@
 <html>
   <head>
-      <title>Kazhak - teacher Console</title>
+      <title>Kazhak - Student Console</title>
       <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
       <style>
           body {
@@ -14,7 +14,7 @@
               text-align: center;
               margin-bottom: 20px;
           }
-          #teacher_list, #teacher_form {
+          #student_list, #student_form {
               margin: 20px auto;
               width: 80%;
               border: 1px solid white;
@@ -29,8 +29,7 @@
           th, td {
               padding: 10px;
               text-align: left;
-              border-bottom: 1px solid white;
-              text-align: center;
+              border: 1px solid white;
           }
           th {
               background-color: rgba(255, 255, 255, 0.066);
@@ -60,7 +59,7 @@
           button:hover {
               background-color: #0082c8;
           }
-          #teacher_form {
+          #student_form {
             color-scheme: dark;
           }
       </style>
@@ -69,7 +68,7 @@
       <div id="header_wrapper">
           <div id="header">
               <div id="title">Kazhak</div>
-              <br>Manage teachers
+              <br>Manage Students
               <nav>
                 <ul>
                   <li><a href="/" style="font-size: 3vh;">Chatbot</a></li>
@@ -80,12 +79,12 @@
           </div>
       </div>
 
-      <div id="teacher_list">
-        <h2><u>List of teachers</u></h2>
-        <table id="teachers_table">
+      <div id="student_list">
+        <h2><u>List of Students</u></h2>
+        <table id="students_table">
             <thead>
                 <tr>
-                    <th><u>Employee ID</u></th>
+                    <th><u>Roll No</u></th>
                     <th><u>Name</u></th>
                     <th><u>Class</u></th>
                     <th><u>Date of Joining</u></th>
@@ -93,45 +92,45 @@
                     <th><u>Actions</u></th>
                 </tr>
             </thead>
-            <tbody id="teachers_body">
-                <!-- teacher records will be populated here -->
+            <tbody id="students_body">
+                <!-- Student records will be populated here -->
             </tbody>
         </table>
     </div>
 
-      <div id="teacher_form">
-          <h2><u>Add New teacher</u></h2>
-          <input type="text" id="roll" class="inp" placeholder="Enter  Employee ID" required />
-          <input type="text" id="name" class="inp" placeholder="Enter Teacher Name" required />
+      <div id="student_form">
+          <h2><u>Add New Student</u></h2>
+          <input type="text" id="roll" class="inp" placeholder="Enter Student Roll No" required />
+          <input type="text" id="name" class="inp" placeholder="Enter Student Name" required />
           <input type="text" id="class" class="inp" placeholder="Enter Class" required />
-          <input type="date" id="join_date" onkeypress="return false"class="inp" placeholder="Enter Date of Joining" required />
-          <input type="date" id="dob" onkeypress="return false" class="inp" placeholder="Enter Date of Birth" required />
-          <button onclick="addteacher()">Add teacher</button>
+          <input type="date" id="join_date" class="inp" onkeypress="return false" placeholder="Enter Date of Joining" required />
+          <input type="date" id="dob" class="inp" onkeypress="return false" placeholder="Enter Date of Birth" required />
+          <button onclick="addStudent()">Add Student</button>
       </div>
 
       <script>
-          async function fetchteachers() {
-              const response = await fetch("/fetch_all_teachers");
-              const teachers = await response.json();
-              const tbody = document.getElementById("teachers_body");
+          async function fetchStudents() {
+              const response = await fetch("/fetch_all_students");
+              const students = await response.json();
+              const tbody = document.getElementById("students_body");
               tbody.innerHTML = ""; // Clear existing records
-              teachers.forEach(teacher => {
+              students.forEach(student => {
                   const row = document.createElement("tr");
                   row.innerHTML = `
-                      <td>${teacher[0]}</td>
-                      <td>${teacher[1]}</td>
-                      <td>${teacher[2]}</td>
-                      <td>${teacher[3].substring(0,teacher[3].length-13)}</td>
-                      <td>${teacher[4].substring(0,teacher[3].length-13)}</td>
-                      <td> <button onclick="editteacher(${teacher[0]})">Edit</button>
-                          <button onclick="deleteteacher(${teacher[0]})">Delete</button>
+                      <td>${student[0]}</td>
+                      <td>${student[1]}</td>
+                      <td>${student[2]}</td>
+                      <td>${student[3]}</td>
+                      <td>${student[4]}</td>
+                      <td> <button onclick="editStudent(${student[0]})">Edit</button>
+                          <button onclick="deleteStudent(${student[0]})">Delete</button>
                   </td>
                   `;
                   tbody.appendChild(row);
               });
           }
 
-          async function addteacher() {
+          async function addStudent() {
               const roll = document.getElementById("roll").value;
               const name = document.getElementById("name").value;
               const className = document.getElementById("class").value;
@@ -144,17 +143,17 @@
                   return;
               }
 
-              await fetch("/add_teacher", {
+              await fetch("/add_student", {
                   method: "POST",
                   headers: {
                       "Content-Type": "application/json",
                   },
                   body: JSON.stringify({ roll, name, class: className, join_date: joinDate, dob }),
               });
-              fetchteachers(); // Refresh the teacher list
+              fetchStudents(); // Refresh the student list
           }
 
-          async function editteacher(roll) {
+          async function editStudent(roll) {
               const name = prompt("Enter new name:");
               const className = prompt("Enter new class:");
               const joinDate = prompt("Enter new date of joining:");
@@ -166,31 +165,31 @@
                   return;
               }
 
-              await fetch("/update_teacher", {
+              await fetch("/update_student", {
                   method: "POST",
                   headers: {
                       "Content-Type": "application/json",
                   },
                   body: JSON.stringify({ roll, name, class: className, join_date: joinDate, dob }),
               });
-              fetchteachers(); // Refresh the teacher list
+              fetchStudents(); // Refresh the student list
           }
 
-          async function deleteteacher(roll) {
-              if (confirm("Are you sure you want to delete this teacher?")) {
-                  await fetch("/delete_teacher_by_id", {
+          async function deleteStudent(roll) {
+              if (confirm("Are you sure you want to delete this student?")) {
+                  await fetch("/delete_student_by_id", {
                       method: "POST",
                       headers: {
                           "Content-Type": "application/json",
                       },
                       body: JSON.stringify({ roll:roll }),
                   });
-                  fetchteachers(); // Refresh the teacher list
+                  fetchStudents(); // Refresh the student list
               }
           }
 
-          // Initial fetch of teachers when the page loads
-          window.onload = fetchteachers;
+          // Initial fetch of students when the page loads
+          window.onload = fetchStudents;
       </script>
         <footer>
             <p style="text-align: center;">© ( 2024 Vignesh R | 6095 | 2K2K- CRUZ). All rights reserved.</p>

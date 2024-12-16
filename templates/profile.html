@@ -1,0 +1,247 @@
+<html>
+
+<head>
+    <title>Kazhak - Student Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+    <style>
+                  body {
+              font-family: "Roboto Mono", monospace;
+              background-color: black;
+              color: white;
+              margin: 0;
+              padding: 20px;
+          }
+          #header_wrapper {
+              text-align: center;
+              margin-bottom: 20px;
+          }
+          #marks_list, #marks_form,#student_details {
+              margin: 20px auto;
+              width: 80%;
+              border: 1px solid white;
+              border-radius: 5px;
+              padding: 20px;
+              background-color: rgba(4, 10, 27, 0.367);
+          }
+          table {
+              width: 100%;
+              border-collapse: collapse;
+          }
+          th, td {
+              padding: 6px;
+              text-align: left;
+              border-bottom: 1px solid white;
+              text-align: center;
+          }
+          th {
+              background-color: rgba(255, 255, 255, 0.066);
+          }
+          .inp {
+              width: calc(30% - 20px);
+              margin: 10px;
+              padding: 10px;
+              border: 1px solid white;
+              border-radius: 5px;
+              background-color: transparent;
+              color: white;
+          }
+          button {
+            font-family: "Roboto Mono", monospace;
+    font-optical-sizing: auto;
+    font-style: normal;
+              padding: 10px 15px;
+              border: none;
+              border-radius: 5px;
+              background-color: black;
+              color: white;
+              cursor: pointer;
+              margin: 10px;
+
+          }
+          button:hover {
+              background-color: #0082c8;
+          }
+          #student_form {
+            color-scheme: dark;
+          }
+
+    </style>
+</head>
+
+<body>
+    <div id="header_wrapper">
+        <div id="header">
+            <div id="title">Kazhak</div>
+            <br>Student Profile
+            <nav>
+                <ul>
+                    <li><a href="/" style="font-size: 3vh;">Chatbot</a></li>
+                    <li><a href="/student" style="font-size: 3vh;">Students</a></li>
+                    <li><a href="/teacher" style="font-size: 3vh;">Teachers</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <div id="student_details">
+        <h2><u>Student Details</u></h2>
+        <p><strong>Roll No:</strong> <span id="profile_roll"></span></p>
+        <p><strong>Name:</strong> <span id="profile_name"></span></p>
+        <p><strong>Class:</strong> <span id="profile_class"></span></p>
+        <p><strong>Date of Joining:</strong> <span id="profile_join_date"></span></p>
+        <p><strong>Date of Birth:</strong> <span id="profile_dob"></span></p>
+    </div>
+
+    <div id="marks_list">
+        <h2><u>Marks</u></h2>
+        <table id="marks_table">
+            <thead>
+                <tr>
+                    <th><u>Exam ID</u></th>
+                    <th><u>Maths</u></th>
+                    <th><u>Physics</u></th>
+                    <th><u>Chemistry</u></th>
+                    <th><u>English</u></th>
+                    <th><u>Computer</u></th>
+                    <th><u>Biology</u></th>
+                    <th><u>Actions</u></th>
+                </tr>
+            </thead>
+            <tbody id="marks_body">
+                <!-- Marks records will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <div id="marks_form">
+        <h2><u>Add Marks</u></h2>
+        <input type="number" id="maths" class="inp" placeholder="Enter Maths Marks" required />
+        <input type="number" id="physics" class="inp" placeholder="Enter Physics Marks" required />
+        <input type="number" id="chemistry" class="inp" placeholder="Enter Chemistry Marks" required />
+        <input type="number" id="english" class="inp" placeholder="Enter English Marks" required />
+        <input type="number" id="computer" class="inp" placeholder="Enter Computer Marks" required />
+        <input type="number" id="biology" class="inp" placeholder="Enter Biology Marks" required />
+        <input type="text" id="exam_id" class="inp" placeholder="Enter Exam ID" required />
+        <button onclick="addMarks()">Add Mark</button>
+    </div>
+
+    <script>
+            async function addMarks() {
+        const examId = document.getElementById("exam_id").value;
+        const maths = document.getElementById("maths").value;
+        const physics = document.getElementById("physics").value;
+        const chemistry = document.getElementById("chemistry").value;
+        const english = document.getElementById("english").value;
+        const computer = document.getElementById("computer").value;
+        const biology = document.getElementById("biology").value;
+
+        await fetch("/add_marks", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                rollno: document.getElementById("profile_roll").innerText,
+                examid: examId, maths: maths, physics: physics, chemistry: chemistry, english: english, computer: computer, biology: biology
+            })
+        });
+        fetchStudentMarks('{{roll}}');
+    }
+    
+        async function fetchStudentProfile(rollno) {
+            // Fetch student details
+            const studentResponse = await fetch(`/fetch_student_by_id`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ roll: rollno })
+            });
+            var student = await studentResponse.json();
+            student = student[0];
+            console.log(student);
+
+            // Populate student details
+            document.getElementById("profile_roll").innerText = student[0];
+            document.getElementById("profile_name").innerText = student[1];
+            document.getElementById("profile_class").innerText = student[2];
+            document.getElementById("profile_join_date").innerText = student[3];
+            document.getElementById("profile_dob").innerText = student[4];}
+
+        async function fetchStudentMarks(rollno) {
+            // Fetch student marks
+            const student = document.getElementById("profile_roll").innerText
+            const marksResponse = await fetch("/fetch_marks_by_student", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ rollno: rollno })
+            });
+            const marks = await marksResponse.json();
+            const marksBody = document.getElementById("marks_body");
+            marksBody.innerHTML = ""; // Clear existing marks
+
+            // Populate marks table
+            marks.forEach(mark => {
+                const row = `<tr>
+                    <td class="eid">${mark[1]}</td>
+                    <td>${mark[2]}</td>
+                    <td>${mark[3]}</td>
+                    <td>${mark[4]}</td>
+                    <td>${mark[5]}</td>
+                    <td>${mark[6]}</td>
+                    <td>${mark[7]}</td>
+                    <td>
+                        <button onclick="editMarks(${student, mark[0]})">Edit</button>
+                        <button onclick="deleteMarks(${student, mark[0]})">Delete</button>
+                    </td>
+                </tr>`;
+                marksBody.innerHTML += row;
+            });
+        }
+
+        async function editMarks(roll) {
+            const eid = prompt("Enter new exam id:") || null;
+            const mat = prompt("Enter new marks in maths:") || null;
+            const phy = prompt("Enter new marks in physics:") || null;
+            const chem = prompt("Enter new marks in chemistry:") || null;
+            const eng = prompt("Enter new marks in english:") || null;
+            const com = prompt("Enter new marks in computer:") || null;
+            const bio = prompt("Enter new marks in biology:") || null;
+
+
+            await fetch("/update_marks", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    rollno: document.getElementById("profile_roll").innerText,
+                    examid: eid, maths: mat, physics: phy, chemistry: chem, english: eng, computer: com, biology: bio
+                })
+            });
+            fetchStudentMarks('{{roll}}');
+            // Refresh the student marks
+        }
+
+        async function deleteMarks(roll) {
+            if (confirm("Are you sure you want to delete this set of marks?")) {
+                await fetch("/delete_marks", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ rollno: document.getElementById("profile_roll").innerText,examid:Array(document.querySelector('.eid')).pop().innerHTML }),
+                });
+        fetchStudentMarks('{{roll}}');
+                
+            }
+        }
+
+        fetchStudentProfile('{{roll}}');
+        fetchStudentMarks('{{roll}}');
+    </script>
+</body>
+
+</html>
