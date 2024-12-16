@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import json
-from gr import Gr
-from sq.sq import Students, Teachers, Marks
+from groq_wrapper.gr import Gr
+from sql_wrapper.sq import Students, Teachers, Marks
 
 """
 This is the main application file for the school assistant bot.
