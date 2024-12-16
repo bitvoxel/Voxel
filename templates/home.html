@@ -1,42 +1,47 @@
 <html>
   <head>
-    <title>Voxel - An intuitive chatbot</title>
+    <title>Kazhak - An intuitive chatbot</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='base.css')}}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
-  
   </head>
 
   <body>
     <div id="header_wrapper">
       <div id="header">
-        <div id="title">Voxel</div>
+        <div id="title">Kazhak</div>
         A School Management System With An Intuitive Chat Bot
         <br>
         <br>
 
-        <section style="font-size: 3vh;" onclick="location.replace('/')"">Chatbot</section>
-        <section style="font-size: 3vh;" onclick="location.replace('/student')"">Students</section>
-        <section style="font-size: 3vh;" onclick="location.replace('/student')"">Teachers</section>
-        <section style="font-size: 3vh;" onclick="location.replace('/student')"">Assignments</section>
-        <section style="font-size: 3vh;" onclick="location.replace('/student')"">Schedules</section>
+        <nav>
+          <ul>
+            <li><a href="/" style="font-size: 3vh;">Chatbot</a></li>
+            <li><a href="/student" style="font-size: 3vh;">Students</a></li>
+            <li><a href="/student" style="font-size: 3vh;">Teachers</a></li>
+          </ul>
+        </nav>
 
       </div>
     </div>
-<br>
+    <br>
     <div id="chat_box">
       <div id="chat">
         <div class="message_box">
-          <div class="name" id="bg">Voxel</div>
+          <div class="bog" id="bg">Kazhak</div>
           <div class="content">Hello there</div>
-      </div>
+        </div>
       </div>
       <div id="prompt">
-          <input type="text" id="inp">
-          <button id="but" onclick="submit()">Send</button>
+        <input type="text" class="inp" id="inp" placeholder="Type a message...">
+        <button id="but" onclick="submit()">Send</button>
       </div>
     </div>
   </body>
+  <footer>
+    <p style="text-align: center;">© ( 2024 Vignesh R | 6095 | 2K2K- CRUZ). All rights reserved.</p>
+</footer>
 </html>
 <style>
   #prompt{
@@ -67,64 +72,19 @@
   #but:hover{
     background-color: #667db6;
   }
-  #inp{
-    width:65vw;
-    padding: 5px;
-    height: 3em;
-    border: 0.5px solid white;
-    border-radius: 5px;
-    background-color: transparent;
-    color: white;
-    font-family: "Roboto Mono", monospace;
-    font-optical-sizing: auto;
-    font-weight: 300;
-    font-style: normal;
-  }
-
-  #chat{
-    width: 70vw;
-    min-height: 60vh;
-    margin: 10px;
-  }
-
-  body {
-    margin: 0;
-    padding: 0;
-    background-color: black;
-    color: white;
-    font-family: "Roboto Mono", monospace;
-    font-optical-sizing: auto;
-    font-weight: 500;
-    font-style: normal;
-  }
-
-  #header_wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  #header {
-    display: flex;
-    font-size: 4vh;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  #title{
-    font-size: 15vh;
-    background-clip: text;
-    background: linear-gradient(to right, #667db6,#667db6, #0082c8, #0082c8, #667db6,#667db6,#0082c8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
 
   #bg{
-    background-clip: text;
-    background: linear-gradient(to right, #667db6,#667db6, #0082c8, #0082c8, #667db6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-size: larger;
+    width: fit-content;
+    padding-right: 15px;
   }
+  #chat{
+    width: 70vw;
+    min-height: 40vh;
+    margin: 10px;
+    overflow-y: auto;
+  }
+
 
   .message_box{
         background-color: black;
@@ -132,35 +92,25 @@
         padding: 10px;
         margin-block: 20px;
     }
-
-    .name{
-        font-weight: 800;
-    }
-
     .content{
         font-weight: 300;
         margin-block: 5px;
     }
 
-    section:hover{
-        color: rebeccapurple;
-        text-decoration: underline;
-    }
 
 </style>
 
 <script>
   function addMessage(name,content,typ) {
     var html=`<div class="message_box" style="justify-self:flex-${typ}">
-          <div class="name" id="bg">${name}</div>
+          <div class="bog" id="bg">${name}</div>
           <div class="content">${content}</div>
             </div>`
     document.getElementById("chat").innerHTML+=html
-    
+    document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
   }
 
-  async function submit() {
-    var message=document.getElementById('inp').value
+  async function submit(message=document.getElementById('inp').value) {
     document.getElementById('inp').focus()
     document.getElementById('inp').select()
     addMessage('You',message,"end")
@@ -174,11 +124,9 @@
             });
 
             const data = await response.json();
-            addMessage('Voxel',data['response'],"start")
+            addMessage('Kazhak',data['response'],"start")
   }
 
-  addMessage('Voxel',"I'm a school assistant bot! I can:<br> 1. **Show information**: I can display information about students, such as their name, class, stream, and house. <br> 2. **Add students**: I can add new students to my memory by providing their name, class, stream, and house.<br> 3. **Sort students**: I can sort students based on various filters, such as class, stream, or house.<br> 4. **Solve homework questions**: I can help solve various homework questions, but please note that my problem-solving abilities are limited to the topics and data I have been trained on.<br> 5. **Take input from students**: You can input a student's name, and I can display their information. <br> 6. **Manage class teachers** I can add teachers and also assign class teachers to a class","start")
-
-
+submit("What can you do?")
 
 </script>
